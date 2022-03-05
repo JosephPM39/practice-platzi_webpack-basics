@@ -2,6 +2,8 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const CssMinimizer = require('css-minimizer-webpack-plugin');
+const Terser = require('terser-webpack-plugin');
 
 module.exports = {
     // Entry nos permite decir el punto de entrada de nuestra aplicación
@@ -12,7 +14,8 @@ module.exports = {
         // Con path.resolve podemos decir dónde va estar la carpeta y la ubicación del mismo
         path: path.resolve(__dirname, "dist"),
         // filename le pone el nombre al archivo final
-        filename: "main.js"
+        filename: "[name].[contenthash].js",
+        assetModuleFilename: 'assets/images/[hash][ext][query]'
     },
     resolve: {
         // Aqui ponemos las extensiones que tendremos en nuestro proyecto para webpack los lea
@@ -33,6 +36,10 @@ module.exports = {
                     'css-loader',
                     'stylus-loader'
                 ],
+            },
+            {
+                test: /\.(jpe?g|svg|png|gif|ico|eot|ttf|woff2?)(\?v=\d+\.\d+\.\d+)?$/i,
+                type: 'asset/resource',
             }
         ]
     },
@@ -42,14 +49,23 @@ module.exports = {
             template: './public/index.html',
             filename: './index.html'
         }),
-        new MiniCssExtractPlugin(),
+        new MiniCssExtractPlugin({
+            filename: 'assets/[name].[contenthash].css'
+        }),
         new CopyPlugin({
-            patterns:[
+            patterns: [
                 {
                     from: path.resolve(__dirname, 'src', 'assets/images'),
                     to: 'assets/images'
                 }
             ]
-        })
-    ]
+        }),
+    ],
+    optimization: {
+        minimize: true,
+        minimizer: [
+            new CssMinimizer(),
+            new Terser()
+        ]
+    }
 }
