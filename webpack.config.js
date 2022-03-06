@@ -7,10 +7,16 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js',
+    clean: true
   },
   resolve: {
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx'],
+    alias: {
+      '@components': path.resolve(__dirname, 'src/components/'),
+      '@styles': path.resolve(__dirname, 'src/styles/')
+    }
   },
+  mode: 'production',
   module: {
     rules: [
       {
@@ -45,4 +51,7 @@ module.exports = {
       filename: '[name].css'
     })
   ],
+  optimization: {
+    minimize: true
+  }
 }
